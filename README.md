@@ -22,6 +22,7 @@ Intent here is to document alternative, curated combinations of tools and produc
     * [Deploy an application](#deploy-an-application)
 * [Install kpack](#install-kpack)
     * [Update images](#update-images)
+* [Launch on-demand services](#launch-on-demand-services)
 * [Observability](#observability)
 * [Cluster Lifecycle Management and Compliance](#cluster-lifecycle-management-and-compliance)
 
@@ -52,9 +53,9 @@ Here's a [script](jumpbox-tools.sh) that will install the above on an  Ubuntu Li
 
 The following collection of open-source and commercial products have been evaluated
 
-| PKS | TKG | cf-for-k8s | kpack | Harbor | TO | TMC |
-|-----|-----|------------|-------|--------|----|------
-| :heavy_check_mark: |     |     :heavy_check_mark:    |       |  :heavy_check_mark:   |    |     |
+| PKS | TKG | cf-for-k8s | kpack | Harbor | TAC | TO | TMC |
+|-----|-----|------------|-------|--------|-----|----|-----|
+| :heavy_check_mark: |     |     :heavy_check_mark:    |       |  :heavy_check_mark:   |    |     |    |
 
 
 ## Install PKS and Harbor
@@ -191,6 +192,12 @@ Calculate some primes
 curl http://{app-url}/primes/1/10000
 ```
 > Replace `{app-url}` above with the route to your freshly deployed application instance
+
+## Launch on-demand services
+
+No self-respecting enterprise application functions alone.  It's typically integrated with an array of other services (e.g., credentials/secrets management, databases, and messaging queues, to name but a few).  How do we curate, launch and integrate services (from a catalog) with applications?
+
+// TODO This is a great time to demo Tanzu Application Catalog
 
 ## Install kpack
 
