@@ -1,6 +1,6 @@
 # tanzu-dev-experience
 
-[![Generic badge](https://img.shields.io/badge/work%20in%20progress-walk%20in%20-someone%20else's%20shoes-yellow)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/work%20in%20progress-walk%20in%20someone%20else's%20shoes-yellow)](https://shields.io/)
 
 
 A compendium of notes and links in order to reduce the time it takes to get an environment up-and-running to evaluate a continually evolving collection of open-source and commercial tooling within the Tanzu portfolio.
