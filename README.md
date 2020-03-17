@@ -31,7 +31,7 @@ The following paths have been tread.  Documentation will be organized (and updat
 
 | AWS  | GCP | Azure | VMWare |
 |------|-----|-------|--------|
-|      | [x] |       |        |
+|      | :heavy_check_mark: |       |        |
 
 ## Prerequisites
 
@@ -54,7 +54,7 @@ The following collection of open-source and commercial products have been evalua
 
 | PKS | TKG | cf-for-k8s | kpack | Harbor | TO | TMC |
 |-----|-----|------------|-------|--------|----|------
-| [x] |     |     [x]    |       |  [x]   |    |     |
+| :heavy_check_mark: |     |     :heavy_check_mark:    |       |  :heavy_check_mark:   |    |     |
 
 
 ## Install PKS and Harbor
@@ -141,7 +141,7 @@ you will want to restart your jumpbox.
 
 * Login to Harbor with `admin` credentials
 * Create a new `Project`
-* Name it `fastnsilver`
+* Name it `contrivances`
 * Set the `Access level` to `Public`
   * Make sure to check the checkbox
 * Click the `OK` button
@@ -152,8 +152,8 @@ We will need to login, tag the image, then push it
 
 ```
 docker login -u admin https://{harbor-hostname}
-docker tag primes:1.0-SNAPSHOT {harbor-hostname}/fastnsilver/primes:1.0-SNAPSHOT
-docker push {harbor-hostname}/fastnsilver/primes:1.0-SNAPSHOT
+docker tag primes:1.0-SNAPSHOT {harbor-hostname}/contrivances/primes:1.0-SNAPSHOT
+docker push {harbor-hostname}/contrivances/primes:1.0-SNAPSHOT
 ```
 > Fetch `{harbor-hostname}` bv visiting your Operations Manager instance, logging in, selecting the `VMWare Harbor Registry` tile, clicking on the `General` link in the left-hand pane and copying the value from the field titled `Hostname`.
 
@@ -170,18 +170,19 @@ cf auth {username} {password}
 Create a new organization and space
 
 ```
-cf create-org zoo-labs
-cf t -o zoo-labs
-cf create-space dev
-cf t -s dev
+cf create-org {organization-name}
+cf t -o {organization-name}
+cf create-space {space-name}
+cf t -s {space-name}
 ```
+> Replace placeholder values above with your own choices
 
 ### Deploy an application
 
 Push it... real good
 
 ```
-cf push primes -o {harbor-hostname}/fastnsilver/primes:1.0-SNAPSHOT
+cf push primes -o {harbor-hostname}/contrivances/primes:1.0-SNAPSHOT
 ```
 
 Calculate some primes
