@@ -5,7 +5,25 @@
 
 A compendium of notes and links in order to reduce the time it takes to get an environment up-and-running to evaluate a continually evolving collection of open-source and commercial tooling within the Tanzu portfolio.
 
-Intent here is to document alternative, curated combinations of tools and products that I've had some experience with, and allow you to choose your own adventure through (a hopefully more expedient) installation and usage of them.
+Intent here is to document alternative, curated combinations of tools and products that I've had some experience with, and allow you to choose your own adventure through (a hopefully more expedient evaluation) installation and usage of them.
+
+* [Overview](#overview)
+* [Prerequisites](#prerequisites)
+* [Products evaluated](#products-evaluated)
+* [Install PKS and Harbor](#install-pks-and-harbor)
+    * [on GCP](#on-gcp)
+* [Update Plans for PKS](#update-plans-for-pks)
+* [Install cf-for-k8s](#install-cf-for-k8s)
+* [Deploy sample application](#deploy-sample-application)
+    * [Build application from source](#build-application-from-source)
+    * [Add new project to Harbor](#add-new-project-to-harbor)
+    * [Push image to Harbor](#push-image-to-harbor)
+    * [Setup cf environment](#setup-cf-environment)
+    * [Deploy an application](#deploy-an-application)
+* [Install kpack](#install-kpack)
+    * [Update images](#update-images)
+* [Observability](#observability)
+* [Cluster Lifecycle Management and Compliance](#cluster-lifecycle-management-and-compliance)
 
 ## Overview
 
@@ -13,97 +31,22 @@ The following paths have been tread.  Documentation will be organized (and updat
 
 | AWS  | GCP | Azure | VMWare |
 |------|-----|-------|--------|
-|      | :x: |       |        |
+|      | [x] |       |        |
 
 ## Prerequisites
 
-The minimum complement of CLIs and SDKs
+The minimum complement of
 
-* aws
-* az
-* bosh
-* cf
-* docker
-* gcloud
-* git
-* java
-* jq
-* k14s
-* kubectl
-* leftovers
-* pivnet
-* terraform
+| CLIs   |  and   |  SDKs     |
+|--------|--------|-----------|
+| aws    | gcloud | kubectl   |
+| az     | git    | leftovers |
+| bosh   | java   | pivnet    |
+| cf     | jq     | python    |
+| docker | k14s   | terraform |
 
-Here's a script that will install the above on an  Ubuntu Linux VM
 
-```bash
-#!/bin/bash
-
-# Install prerequisites
-
-sudo apt update --yes && \
-sudo apt install --yes build-essential curl default-jdk jq git python-pip python-dev wget && \
-sudo pip install --upgrade pip
-
-PIVNET_UAA_REFRESH_TOKEN=change_me
-
-cd ~
-
-pip install awscli
-
-export AZ_REPO=$(lsb_release -cs) && \
-echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
-sudo tee /etc/apt/sources.list.d/azure-cli.list && \
-sudo apt-key --keyring /etc/apt/trusted.gpg.d/Microsoft.gpg adv \
---keyserver packages.microsoft.com \
---recv-keys BC528686B50D79E339D3721CEB3E94ADBE1229CF && \
-sudo apt update && \
-sudo apt install --yes azure-cli
-
-BOSH_VERSION=6.2.1
-wget -O bosh https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-${BOSH_VERSION}-linux-amd64 && \
-chmod +x bosh && \
-sudo mv bosh /usr/local/bin/
-
-sudo apt install --yes docker.io && \
-sudo systemctl start docker && \
-sudo systemctl enable docker && \
-sudo usermod -aG docker ${USER}
-
-export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
-echo "deb http://packages.cloud.google.com/apt ${CLOUD_SDK_REPO} main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-apt update -y && apt install google-cloud-sdk -y
-
-curl -L https://k14s.io/install.sh | sudo bash
-
-PIVNET_VERSION=1.0.1
-wget -O pivnet https://github.com/pivotal-cf/pivnet-cli/releases/download/v${PIVNET_VERSION}/pivnet-linux-amd64-${PIVNET_VERSION} && \
-chmod +x pivnet && \
-sudo mv pivnet /usr/local/bin/
-
-TF_VERSION=0.12.23
-wget -O terraform.zip https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip && \
-unzip terraform.zip && \
-sudo mv terraform /usr/local/bin && \
-rm terraform.zip
-
-pivnet login --api-token="${PIVNET_UAA_REFRESH_TOKEN}" && \
-pivnet download-product-files --product-slug='pivotal-container-service' --release-version='1.6.0' --product-file-id=528557 && \
-mv pks-linux-amd64-1.6.0-build.225 pks && \
-chmod +x pks && \
-sudo mv pks /usr/local/bin
-
-curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
-chmod +x kubectl && \
-sudo mv kubectl /usr/local/bin
-
-LEFTOVERS_VERSION=0.62.0
-wget https://github.com/genevieve/leftovers/releases/download/v${LEFTOVERS_VERSION}/leftovers-v${LEFTOVERS_VERSION}-linux-amd64 && \
-mv leftovers-v${LEFTOVERS_VERSION}-linux-amd64 leftovers && \
-chmod +x leftovers && \
-sudo mv leftovers /usr/local/bin
-```
+Here's a [script](jumpbox-tools.sh) that will install the above on an  Ubuntu Linux VM
 
 ## Products evaluated
 
@@ -111,15 +54,14 @@ The following collection of open-source and commercial products have been evalua
 
 | PKS | TKG | cf-for-k8s | kpack | Harbor | TO | TMC |
 |-----|-----|------------|-------|--------|----|------
-| :x: |     |     :x:    |       |  :x:   |    |     |
+| [x] |     |     [x]    |       |  [x]   |    |     |
 
-## Where to go from here?
 
-### Install PKS and Harbor
+## Install PKS and Harbor
 
 Go visit [Niall Thomson](https://www.niallthomson.com)'s excellent [paasify-pks](https://github.com/niallthomson/paasify-pks) project.
 
-#### on GCP
+### on GCP
 
 Be sure to peruse and follow the
 
@@ -136,16 +78,13 @@ Be sure to peruse and follow the
  * Harbor
     * Login to Operations Manager, visit the Harbor tile configuration, click on the `Credentials` tab, click on the `Admin Password` link
 
-##### Don't forget to restart your jumbox
-
-You will need to restart your compute instance in order for Docker to work appropriately.
-
+And don't forget to restart your jumpbox... you'll need to restart your compute instance in order for Docker to work appropriately.
 
 ```
 sudo shutdown -r
 ```
 
-### Update Plans for PKS
+## Update Plans for PKS
 
 * Login to Operations Manager
 * Visit the `Enterprise PKS` tile and select `Plan 2` from the left-hand pane
@@ -156,16 +95,16 @@ sudo shutdown -r
 * Click on `Review Pending Changes`
 * Un-check the checkbox next to the product titled `VMWare Harbor Registry`, then click on the the `Apply Changes` button
 
-### Install cf-for-k8s
+## Install cf-for-k8s
 
 This is an open-source project that's meant to deliver the `cf push` experience for developers who are deploying applications on Kubernetes.  It's early days yet, so don't expect to show off a robust set of features.  What we can do today is demonstrate pushing a pre-built Docker image that originates from a secure, private Docker registry (Harbor).
 
 Visit and follow the [deploy](https://github.com/cloudfoundry/cf-for-k8s/blob/master/docs/deploy.md#steps-to-deploy) documentation for `cf-for-k8s`.
   * Choose `Option 1` on Step 2 which relies on script for generating configuration for use with install script
 
-### Deploy sample application
+## Deploy sample application
 
-#### Build application from source
+### Build application from source
 
 We're going to clone the source of a [Spring Boot 2.3.0.M3](https://spring.io/blog/2020/03/12/spring-boot-2-3-0-m3-available-now) application which when built with [Gradle](https://gradle.org), will automatically assemble a Docker image employing a cloud-native [buildpack](https://hub.docker.com/r/cloudfoundry/cnb).
 
@@ -198,7 +137,7 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
 
 you will want to restart your jumpbox.
 
-#### Add new project to Harbor
+### Add new project to Harbor
 
 * Login to Harbor with `admin` credentials
 * Create a new `Project`
@@ -207,7 +146,7 @@ you will want to restart your jumpbox.
   * Make sure to check the checkbox
 * Click the `OK` button
 
-#### Push image to Harbor
+### Push image to Harbor
 
 We will need to login, tag the image, then push it
 
@@ -218,7 +157,7 @@ docker push {harbor-hostname}/fastnsilver/primes:1.0-SNAPSHOT
 ```
 > Fetch `{harbor-hostname}` bv visiting your Operations Manager instance, logging in, selecting the `VMWare Harbor Registry` tile, clicking on the `General` link in the left-hand pane and copying the value from the field titled `Hostname`.
 
-#### Setup cf environment
+### Setup cf environment
 
 Target the cf-for-k8s API endpoint and authenticate
 
@@ -237,7 +176,7 @@ cf create-space dev
 cf t -s dev
 ```
 
-#### Deploy application
+### Deploy an application
 
 Push it... real good
 
@@ -252,7 +191,7 @@ curl http://{app-url}/primes/1/10000
 ```
 > Replace `{app-url}` above with the route to your freshly deployed application instance
 
-### Install kpack
+## Install kpack
 
 Now that we've worked out how to build and deploy a Spring Boot application.  What about everything else that could be containerized?  And how do we offload the work of building images (and keeping them up-to-date) from our jumpbox to some sort of automated CI engine?  Let's take a look at what [kpack](https://github.com/pivotal/kpack) can do for us.
 
@@ -264,14 +203,14 @@ Seems pretty straight-forward to follow these [instructions](https://github.com/
 
 // TODO Demonstrate a use-case where-in a sub-category of images are updated
 
-### What about Observability?
+## Observability
 
 Great we've deployed workloads to Kubernetes.  How are we able to troubleshoot issues in production?  At a minimum we'd like to surface health and performance metrics.
 
 // TODO This is a perfect time to demo Tanzu Observability features
 
-### Do you have a consistent handle on all your clusters?
+## Cluster Lifecycle Management and Compliance
 
-All clusters are not created equally.  Most enterprises struggle to apply consistent policies (security and compliance come ti mind) across multiple runtime environments operating on-premise and/or in multiple public clouds.
+All clusters are not created equally.  Most enterprises struggle to apply consistent policies (security and compliance come to mind) across multiple runtime environments operating on-premise and/or in multiple public clouds.
 
 // TODO Time for Tanzu Mission Control to shine
