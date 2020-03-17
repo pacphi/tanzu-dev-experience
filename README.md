@@ -109,9 +109,9 @@ sudo mv leftovers /usr/local/bin
 
 The following collection of open-source and commercial products have been evaluated
 
-| PKS | TKG | cf-for-k8s | kpack | Harbor |
-|-----|-----|------------|-------|--------|
-| :x: |     |     :x:    |       |  :x:   |
+| PKS | TKG | cf-for-k8s | kpack | Harbor | TO | TMC |
+|-----|-----|------------|-------|--------|----|------
+| :x: |     |     :x:    |       |  :x:   |    |     |
 
 ## Where to go from here?
 
@@ -259,3 +259,19 @@ Now that we've worked out how to build and deploy a Spring Boot application.  Wh
 Seems pretty straight-forward to follow these [instructions](https://github.com/pivotal/kpack/blob/master/docs/install.md#installing-kpack-1).  You'll want to download the [latest release](https://github.com/pivotal/kpack/releases/download/v0.0.6/release-0.0.6.yaml) first.
 
 // TODO Add more explicit post-installation instructions
+
+### Update images
+
+// TODO Demonstrate a use-case where-in a sub-category of images are updated
+
+### What about Observability?
+
+Great we've deployed workloads to Kubernetes.  How are we able to troubleshoot issues in production?  At a minimum we'd like to surface health and performance metrics.
+
+// TODO This is a perfect time to demo Tanzu Observability features
+
+### Do you have a consistent handle on all your clusters?
+
+All clusters are not created equally.  Most enterprises struggle to apply consistent policies (security and compliance come ti mind) across multiple runtime environments operating on-premise and/or in multiple public clouds.
+
+// TODO Time for Tanzu Mission Control to shine
