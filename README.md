@@ -193,6 +193,11 @@ curl http://{app-url}/primes/1/10000
 ```
 > Replace `{app-url}` above with the route to your freshly deployed application instance
 
+Tail the logs
+
+```
+cf tail primes
+```
 
 Scale up
 
