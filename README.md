@@ -193,6 +193,25 @@ curl http://{app-url}/primes/1/10000
 ```
 > Replace `{app-url}` above with the route to your freshly deployed application instance
 
+
+Scale up
+
+```
+cf scale primes -i 2
+```
+
+Inspect events
+
+```
+cf events primes
+```
+
+Show app health and status
+
+```
+cf app primes
+```
+
 ## Launch on-demand services
 
 No self-respecting enterprise application functions alone.  It's typically integrated with an array of other services (e.g., credentials/secrets management, databases, and messaging queues, to name but a few).  How do we curate, launch and integrate services (from a catalog) with applications?
