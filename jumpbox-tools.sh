@@ -30,7 +30,15 @@ sudo apt install --yes azure-cli
 
 wget -O bosh https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-${BOSH_VERSION}-linux-amd64 && \
 chmod +x bosh && \
-sudo mv bosh /usr/local/bin/
+sudo mv bosh /usr/local/bin
+
+curl -L "https://packages.cloudfoundry.org/stable?release=linux64-binary&source=github" | tar -zx && \
+sudo mv cf /usr/local/bin
+
+curl -L "https://packages.cloudfoundry.org/stable?release=linux64-binary&version=v7&source=github" | tar -zx && \
+sudo mv cf7 /usr/local/bin
+
+cf install-plugin -r CF-Community "log-cache" -f
 
 sudo apt install --yes docker.io && \
 sudo systemctl start docker && \
@@ -45,7 +53,7 @@ curl -L https://k14s.io/install.sh | sudo bash
 
 wget -O pivnet https://github.com/pivotal-cf/pivnet-cli/releases/download/v${PIVNET_VERSION}/pivnet-linux-amd64-${PIVNET_VERSION} && \
 chmod +x pivnet && \
-sudo mv pivnet /usr/local/bin/
+sudo mv pivnet /usr/local/bin
 
 wget -O terraform.zip https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip && \
 unzip terraform.zip && \
