@@ -13,7 +13,10 @@ Intent here is to document alternative, curated combinations of tools and produc
 * [Prerequisites](#prerequisites)
 * [Tanzu Portfolio](#tanzu-portfolio)
 * [Run](#run)
+  * [TKG](#tkg)
   * [PKS and Harbor](#pks-and-harbor)
+    * [on AWS](#on-aws)
+    * [on Azure](#on-azure)
     * [on GCP](#on-gcp)
     * [Activate additional plans for PKS](#activate-additional-plans-for-pks)
   * [cf-for-k8s](#cf-for-k8s)
@@ -255,7 +258,7 @@ http http://{app-url}/primes/1/10000
 
 #### Build and deploy from source
 
-Why did we go through all that? What if all we really needed to do was bring our source code to the party; let the platform take care of building, packaging, deploying and up-to-date, secure image to our registry, then push that image out to an environment?
+Why did we go through all that? What if all we really needed to do was bring our source code to the party; let the platform take care of building, packaging, deploying an up-to-date, secure image to our registry, then push that image out to an environment?
 
 Let's see how we do that. It's as simple as...
 
