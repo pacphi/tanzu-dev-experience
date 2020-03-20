@@ -244,7 +244,7 @@ http http://{app-url}/primes/1/10000
 ```
 > Replace `{app-url}` above with the route to your freshly deployed application instance
 
-<details><summary>Tail the logs</summary><pre>cf app primes</pre></details>
+<details><summary>Tail the logs</summary><pre>cf tail primes</pre></details>
 
 <details><summary>Scale up</summary><pre>cf scale primes -i 2</pre></details>
 
