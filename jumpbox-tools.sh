@@ -5,7 +5,7 @@ cd ~
 # Install prerequisites
 
 sudo apt update --yes && \
-sudo apt install --yes build-essential curl default-jdk jq git python-pip python-dev wget && \
+sudo apt install --yes build-essential curl default-jdk httpie jq git python-pip python-dev wget && \
 sudo pip install --upgrade pip
 
 # This should be the value of Legacy API Token, found here: https://network.pivotal.io/users/dashboard/edit-profile
@@ -74,3 +74,8 @@ wget https://github.com/genevieve/leftovers/releases/download/v${LEFTOVERS_VERSI
 mv leftovers-v${LEFTOVERS_VERSION}-linux-amd64 leftovers && \
 chmod +x leftovers && \
 sudo mv leftovers /usr/local/bin
+
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64 && \
+sudo add-apt-repository ppa:rmescandon/yq && \
+sudo apt update && \
+sudo apt install yq --yes
