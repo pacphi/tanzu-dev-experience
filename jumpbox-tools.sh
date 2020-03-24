@@ -69,6 +69,11 @@ mv pks-linux-amd64-1.6.0-build.225 pks && \
 chmod +x pks && \
 sudo mv pks /usr/local/bin
 
+pivnet download-product-files --product-slug='container-services-manager' --release-version='0.7.92' --product-file-id=630473 && \
+mv ksm-0.7.92.linux ksm && \
+chmod +x ksm && \
+sudo mv ksm /usr/local/bin
+
 curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
 chmod +x kubectl && \
 sudo mv kubectl /usr/local/bin

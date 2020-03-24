@@ -32,10 +32,13 @@ Intent here is to document alternative, curated combinations of tools and produc
     * [Push image to Harbor](#push-image-to-harbor)
     * [Deploy image](#deploy-image)
     * [Build and deploy from source](#build-and-deploy-from-source)
-  * [(TAC) Tanzu Application Catalog](#tac-tanzu-application-catalog)
+  * [Brokered Services](#brokered-services)
+    * [(KSM) Container Services Manager](#ksm-container-services-manager)
+    * [(TAC) Tanzu Application Catalog](#tac-tanzu-application-catalog)
   * [kpack](#kpack)
     * [Update images](#update-images)
 * [Manage](#manage)
+  * [Velero](#velero)
   * [(TO) Tanzu Observability](#to-tanzu-observability)
   * [(TMC) Tanzu Mission Control](#tmc-tanzu-mission-control)
 
@@ -58,7 +61,7 @@ The minimum complement of
 | bosh   | java   | pivnet    |
 | cf     | jq     | python    |
 | docker | k14s   | terraform |
-| gcloud |        | yq        |
+| gcloud | ksm    | yq        |
 
 Here's a [script](jumpbox-tools.sh) that will install the above on an  Ubuntu Linux VM
 
@@ -66,9 +69,9 @@ Here's a [script](jumpbox-tools.sh) that will install the above on an  Ubuntu Li
 
 The following collection of open-source and commercial products have been evaluated
 
-TKG | PKS                | Harbor             | cf-for-k8s         | kpack |  TAC | TO | TMC |
-|---|--------------------|--------------------|--------------------|-------|------|----|-----|
-|   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |       |      |    |     |
+TKG | PKS                | Harbor             | Velero  | cf-for-k8s         | kpack |  KSM |TAC | TO  | TMC |
+|---|--------------------|--------------------|---------|--------------------|-------|------|----|-----|-----|
+|   | :heavy_check_mark: | :heavy_check_mark: |         | :heavy_check_mark: |       |      |    |     |     |
 
 
 ## Run
@@ -247,6 +250,10 @@ http http://{app-url}/primes/1/10000
 ```
 > Replace `{app-url}` above with the route to your freshly deployed application instance
 
+<details><summary>Get environment variables</summary><pre>cf env primes</pre></details>
+
+<details><summary>Show most recent logs</summary><pre>cf logs primes --recent</pre></details>
+
 <details><summary>Tail the logs</summary><pre>cf tail primes</pre></details>
 
 <details><summary>Scale up</summary><pre>cf scale primes -i 2</pre></details>
@@ -266,15 +273,32 @@ Let's see how we do that. It's as simple as...
 cf push primes
 ```
 
-### (TAC) Tanzu Application Catalog
+#### Deploy stratos
+
+[Stratos](https://github.com/cloudfoundry/stratos/tree/master/deploy/cloud-foundry#Deploy-Stratos-from-docker-image) is a UI administrative console for managing Cloud Foundry
+
+```
+cf push console -o splatform/stratos:stable -m 128M -k 384M
+```
+
+> ** Outstanding [issue](https://github.com/cloudfoundry/cf-for-k8s/issues/46) currently prevents us from effectively demonstrating above.
+
+### Brokered Services
 
 No self-respecting enterprise application functions alone.  It's typically integrated with an array of other services (e.g., credentials/secrets management, databases, and messaging queues, to name but a few).  How do we curate, launch and integrate services (from a catalog) with applications?
 
+#### (KSM) Container Services Manager
+
+At a minimum a complement of Elasticsearch, Kafka, Mongo, MySQL, and Neo4J, Postgres offerings would be compelling to curate and deliver to enterprise developers.
+
+// TODO
+
+#### (TAC) Tanzu Application Catalog
 // TODO
 
 ### kpack
 
-Now that we've worked out how to build and deploy a Spring Boot application.  What about everything else that could be containerized?  And how do we offload the work of building images (and keeping them up-to-date) from our jumpbox to some sort of automated CI engine?  Let's take a look at what [kpack](https://github.com/pivotal/kpack) can do for us.
+Now that we've worked out how to build and deploy a Spring Boot application.  What about everything else that could be containerized?  And how do we offload the work of building images (and keeping them up-to-date) from our jumpbox to some sort of automated CI engine?  Let's take a look at what [kpack](https://github.com/pivotal/kpack) and [kpack-viz](https://github.com/niallthomson/kpack-viz) can do for us.
 
 Seems pretty straight-forward to follow these [instructions](https://github.com/pivotal/kpack/blob/master/docs/install.md#installing-kpack-1).  You'll want to download the [latest release](https://github.com/pivotal/kpack/releases/download/v0.0.6/release-0.0.6.yaml) first.
 
@@ -285,6 +309,12 @@ Seems pretty straight-forward to follow these [instructions](https://github.com/
 // TODO Demonstrate a use-case where-in a sub-category of images are updated
 
 ## Manage
+
+### Velero
+
+What about your backup and recovery needs?
+
+// TODO
 
 ### (TO) Tanzu Observability
 
