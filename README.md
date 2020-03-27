@@ -19,13 +19,12 @@ Intent here is to document alternative, curated combinations of tools and produc
     * [on Azure](#on-azure)
     * [on GCP](#on-gcp)
     * [Activate additional plans for PKS](#activate-additional-plans-for-pks)
-  * [cf-for-k8s](#cf-for-k8s)
-    * [Clone](#clone)
+  * [TAS](#tas)
     * [Configure](#configure)
         * [Integrate Harbor](#integrate-harbor)
     * [Rollout](#rollout)
 * [Build](#build)
-  * [Use cf CLI to setup cf-for-k8s environment](#use-cf-cli-to-setup-cf-for-k8s-environment)
+  * [Use cf CLI to setup environment](#use-cf-cli-to-setup-environment)
   * [Build and deploy sample application](#build-and-deploy-sample-application)
     * [Clone](#clone-1)
     * [Assemble image](#assemble-image)
@@ -41,6 +40,9 @@ Intent here is to document alternative, curated combinations of tools and produc
   * [Velero](#velero)
   * [(TO) Tanzu Observability](#to-tanzu-observability)
   * [(TMC) Tanzu Mission Control](#tmc-tanzu-mission-control)
+* [Appendices](#appendices)
+  * [Articles](#articles)
+  * [Documentation](#documentation)
 
 ## Overview
 
@@ -69,7 +71,7 @@ Here's a [script](jumpbox-tools.sh) that will install the above on an  Ubuntu Li
 
 The following collection of open-source and commercial products have been evaluated
 
-TKG | PKS                | Harbor             | Velero  | cf-for-k8s         | kpack |  KSM |TAC | TO  | TMC |
+TKG | PKS                | Harbor             | Velero  | TAS                | kpack |  KSM |TAC | TO  | TMC |
 |---|--------------------|--------------------|---------|--------------------|-------|------|----|-----|-----|
 |   | :heavy_check_mark: | :heavy_check_mark: |         | :heavy_check_mark: |       |      |    |     |     |
 
@@ -123,47 +125,86 @@ Be sure to peruse and follow the
 * Click on `Review Pending Changes`
 * Un-check the checkbox next to the product titled `VMWare Harbor Registry`, then click on the the `Apply Changes` button
 
-### cf-for-k8s
+### TAS
 
-This is an open-source project that's meant to deliver the `cf push` experience for developers who are deploying applications on Kubernetes.  It's early days yet, so don't expect to show off a robust set of features.
+**cf-for-k8s**
+
+An open-source project that's meant to deliver the `cf push` experience for developers who are deploying applications on Kubernetes.  It's early days yet, so don't expect to show off a robust set of features.
 
 What we can do today is demonstrate
 
 * deploying a pre-built Docker image that originates from a secure, private Docker registry (e.g., Harbor) or
 * starting with source code, leveraging a cloud native [buildpack](https://buildpacks.io) to build and package it into an OCI image, and then deploying.
 
-#### Clone
-
 ```
 git clone https://github.com/cloudfoundry/cf-for-k8s.git
+cd cf-for-k8s
 ```
+
+**(TAS) Tanzu Application Service for Kubernetes**
+
+The commercial distribution based on cf-for-k8s. It must be sourced from the [Pivotal Network](https://network.pivotal.io/products/pas-for-kubernetes).
+
+```
+mkdir tas-for-k8s
+pivnet download-product-files --product-slug='pas-for-kubernetes' --release-version='0.1.0-build.206' --product-file-id=644720
+tar xvf tanzu-application-service.0.1.0-build.206.tar -C tas-for-k8s
+cd tas-for-k8s
+```
+> Update `--release-version` and `--product-file-id` when later releases become available
+
 
 #### Configure
 
+If cf-for-k8s
+
 ```
-cd cf-for-k8s
-./hack/generate-values.sh {cf-domain} > /tmp/cf-values.yml
+./hack/generate-values.sh -d {cf-domain} > /tmp/cf-values.yml
 ```
+
+If TAS
+
+```
+./config/cf-for-k8s/hack/generate-values.sh -d {cf-domain} > /tmp/cf-values.yml
+```
+
 > Replace `{cf-domain}` with `cf.` as the prefix to your PKS sub-domain (e.g., if your sub-domain was `hagrid.ironleg.me`, then `{cf-domain}` would be `cf.hagrid.ironleg.me`.
 
 ##### Integrate Harbor
 
+If cf-for-k8s
+
 Use `vi` or some other editor to append the following lines to `/tmp/cf-values.yml`.  We're also enabling Cloud Native Buildpack support by doing this.
 
 ```
-kpack:
-  registry:
-    hostname: harbor.{sub-domain}
-    repository: library
-    username: admin
-    password: {harbor-password}
+app_registry:
+  hostname: harbor.{sub-domain}
+  repository: library
+  username: admin
+  password: {harbor-password}
 ```
-> Replace `{sub-domain}` with your PKS sub-domain.  Replace `{harbor-password}` by logging into `Operations Manager`, clicking on the `VMWare Harbor Registry` tile, clicking on the `Credentials` tab, then clicking on `Link to Credential` next to the `Admin Password` label.
 
+If TAS
+
+```
+export YTT_TAS_registry__server="harbor.{sub-domain}"
+export YTT_TAS_registry__username=admin
+export YTT_TAS_registry__password="{harbor-password}"
+```
+
+> Replace `{sub-domain}` with your PKS sub-domain.  Replace `{harbor-password}` by logging into `Operations Manager`, clicking on the `VMWare Harbor Registry` tile, clicking on the `Credentials` tab, then clicking on `Link to Credential` next to the `Admin Password` label.
 
 #### Rollout
 
-<details><summary>Install</summary><pre>./bin/install-cf.sh /tmp/cf-values.yml</pre></details>
+<details><summary>Install cf-for-k8s</summary><pre>./bin/install-cf.sh /tmp/cf-values.yml</pre></details>
+
+<details><summary>Install TAS</summary><pre>./bin/install-tas.sh /tmp/cf-values.yml</pre></details>
+
+<details><summary>Determine IP Address of Istio Ingress Gateway</summary><pre>kubectl get svc -n istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[*].ip}'</pre></details>
+
+<details><summary>Set DNS entry</summary><pre># Sample A record in cloud provider DNS. The IP address below is the address of Ingress gateway's external IP
+Domain         Record Type  TTL  IP Address
+*.{cf-domain}  A            30   35.111.111.111</pre><ul><li>for GCP, see <a href="https://cloud.google.com/dns/records#adding_or_removing_a_record">Adding or Removing a Record</a></li></ul></details>
 
 <details><summary>Validate</summary><pre>kubectl get pods -n cf-system</pre></details>
 
@@ -172,7 +213,7 @@ kpack:
 
 ## Build
 
-### Use cf CLI to setup cf-for-k8s environment
+### Use cf CLI to setup environment
 
 Target the cf-for-k8s API endpoint and authenticate
 
@@ -181,6 +222,12 @@ cf api --skip-ssl-validation https://{cf-api-endpoint}
 cf auth {username} {password}
 ```
 > If you forgot any of the placeholder values above, just `cat /tmp/cf-values.yml`.  Values for `{cf-api-endpoint}` and `{password}` should respectively equate to `app_domain` and `cf_admin_password` values.
+
+Enable Docker
+
+```
+cf enable-feature-flag diego_docker
+```
 
 Create a new organization and space
 
@@ -289,7 +336,7 @@ No self-respecting enterprise application functions alone.  It's typically integ
 
 #### (KSM) Container Services Manager
 
-At a minimum a complement of Elasticsearch, Kafka, Mongo, MySQL, and Neo4J, Postgres offerings would be compelling to curate and deliver to enterprise developers.
+At a minimum a complement of Couchbase, Elasticsearch, Kafka, Mongo, MySQL, Neo4J, Postgres, and Vault offerings would be compelling to curate and deliver to enterprise developers.
 
 // TODO
 
@@ -327,3 +374,14 @@ Great we've deployed workloads to Kubernetes.  How are we able to troubleshoot i
 All clusters are not created equally.  Most enterprises struggle to apply consistent policies (security and compliance come to mind) across multiple runtime environments operating on-premise and/or in multiple public clouds.
 
 // TODO
+
+## Appendices
+
+### Articles
+
+* [How to Add Software Packaged as Helm Charts & Kubernetes Operators to Tanzu Application Service](https://tanzu.vmware.com/content/blog/how-to-add-software-packaged-as-helm-charts-kubernetes-operators-to-your-pivotal-platform)
+
+### Documentation
+
+* [Cloud Foundry for Kubernetes](https://github.com/cloudfoundry/cf-for-k8s)
+* [(KSM) Container Services Manager](https://docs.pivotal.io/ksm/0-7/index.html)
