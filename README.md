@@ -325,6 +325,9 @@ cf push primes
 [Stratos](https://github.com/cloudfoundry/stratos/tree/master/deploy/cloud-foundry#Deploy-Stratos-from-docker-image) is a UI administrative console for managing Cloud Foundry
 
 ```
+cf t -o system
+cf create-space admin
+cf t -s admin
 cf push console -o splatform/stratos:stable -m 128M -k 384M
 ```
 
