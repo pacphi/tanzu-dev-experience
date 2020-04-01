@@ -59,11 +59,12 @@ The minimum complement of
 | CLIs   |  and   |  SDKs     |
 |--------|--------|-----------|
 | aws    | git    | kubectl   |
-| az     | httpie | leftovers |
-| bosh   | java   | pivnet    |
-| cf     | jq     | python    |
-| docker | k14s   | terraform |
-| gcloud | ksm    | yq        |
+| az     | helm   | leftovers |
+| bosh   | httpie | pivnet    |
+| cf     | java   | python    |
+| docker | jq     | terraform |
+| gcloud | k14s   | yq        |
+|        | ksm    |           |
 
 Here's a [script](jumpbox-tools.sh) that will install the above on an  Ubuntu Linux VM
 
@@ -127,6 +128,7 @@ Be sure to peruse and follow the
 
 ### TAS
 
+
 **cf-for-k8s**
 
 An open-source project that's meant to deliver the `cf push` experience for developers who are deploying applications on Kubernetes.  It's early days yet, so don't expect to show off a robust set of features.
@@ -141,14 +143,20 @@ git clone https://github.com/cloudfoundry/cf-for-k8s.git
 cd cf-for-k8s
 ```
 
+If you haven't yet installed PKS or TKG with Harbor on your IaaS of choice, you might consider a fast-track route for demo/evaluation purposes. Employ  Niall Thomson's [Tanzu Playground](https://github.com/niallthomson/tanzu-playground) to quickly launch cf-for-k8s on GKE.
+
+> **Caveat emptor** as of 2020-03-31, if you choose to follow this route, support for the cf push experience with Cloud Native Buildpacks and resolving container images from a private registry such as Harbor is not yet available.
+
+<details><summary>Generate a kubeconfig entry</summary><pre>gcloud container clusters get-credentials {cluster-name} --zone {availability-zone}</pre></details>
+
 **(TAS) Tanzu Application Service for Kubernetes**
 
 The commercial distribution based on cf-for-k8s. It must be sourced from the [Pivotal Network](https://network.pivotal.io/products/pas-for-kubernetes).
 
 ```
 mkdir tas-for-k8s
-pivnet download-product-files --product-slug='pas-for-kubernetes' --release-version='0.1.0-build.206' --product-file-id=644720
-tar xvf tanzu-application-service.0.1.0-build.206.tar -C tas-for-k8s
+pivnet download-product-files --product-slug='pas-for-kubernetes' --release-version='0.1.0-build.223' --product-file-id=649189
+tar xvf tanzu-application-service.0.1.0-build.223.tar -C tas-for-k8s
 cd tas-for-k8s
 ```
 > Update `--release-version` and `--product-file-id` when later releases become available
@@ -199,6 +207,8 @@ export YTT_TAS_registry__password="{harbor-password}"
 <details><summary>Install cf-for-k8s</summary><pre>./bin/install-cf.sh /tmp/cf-values.yml</pre></details>
 
 <details><summary>Install TAS</summary><pre>./bin/install-tas.sh /tmp/cf-values.yml</pre></details>
+
+<details><summary>(Optional) Add overlays</summary><ul><li>Consult these <a href="https://github.com/cloudfoundry/cf-for-k8s/commit/b4215fdddd10f0fdcb970f7f5db1cbe945aea1a5">instructions</a> for deploying with an overlay</li></ul></details>
 
 <details><summary>Determine IP Address of Istio Ingress Gateway</summary><pre>kubectl get svc -n istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[*].ip}'</pre></details>
 
@@ -322,16 +332,21 @@ cf push primes
 
 #### Deploy stratos
 
-[Stratos](https://github.com/cloudfoundry/stratos/tree/master/deploy/cloud-foundry#Deploy-Stratos-from-docker-image) is a UI administrative console for managing Cloud Foundry
+[Stratos](https://github.com/cloudfoundry/stratos/tree/master/deploy/kubernetes/console) is a UI administrative console for managing Cloud Foundry
 
-```
-cf t -o system
-cf create-space admin
-cf t -s admin
-cf push console -o splatform/stratos:stable -m 128M -k 384M
-```
+<details><summary>Add Helm repository</summary><pre>helm repo add stratos https://cloudfoundry.github.io/stratos</pre></details>
 
-> ** Outstanding [issue](https://github.com/cloudfoundry/cf-for-k8s/issues/46) currently prevents us from effectively demonstrating above.
+<details><summary>Create new namespace</summary><pre>kubectl create namespace stratos</pre></details>
+
+<details><summary>Install</summary><pre>helm install console stratos/console --namespace=stratos --set console.service.type=LoadBalancer</pre></details>
+
+<details><summary>Get Ingress</summary><pre>kubectl describe service console-ui-ext -n stratos | grep Ingress</pre></details>
+
+<details><summary>Upgrade</summary><pre>helm repo update
+helm upgrade console stratos/console --namespace=stratos --recreate-pods</pre></details>
+
+<details><summary>Uninstall</summary><pre>helm uninstall console --namespace=stratos
+kubectl delete namespace stratos</pre></details>
 
 ### Brokered Services
 
@@ -350,7 +365,7 @@ At a minimum a complement of Couchbase, Elasticsearch, Kafka, Mongo, MySQL, Neo4
 
 Now that we've worked out how to build and deploy a Spring Boot application.  What about everything else that could be containerized?  And how do we offload the work of building images (and keeping them up-to-date) from our jumpbox to some sort of automated CI engine?  Let's take a look at what [kpack](https://github.com/pivotal/kpack) and [kpack-viz](https://github.com/niallthomson/kpack-viz) can do for us.
 
-Seems pretty straight-forward to follow these [instructions](https://github.com/pivotal/kpack/blob/master/docs/install.md#installing-kpack-1).  You'll want to download the [latest release](https://github.com/pivotal/kpack/releases/download/v0.0.6/release-0.0.6.yaml) first.
+Seems pretty straight-forward to follow these [instructions](https://github.com/pivotal/kpack/blob/master/docs/install.md#installing-kpack-1).  You'll want to download the [latest release](https://github.com/pivotal/kpack/releases/download/v0.0.8/release-0.0.8.yaml) first.
 
 // TODO Add more explicit post-installation instructions
 
