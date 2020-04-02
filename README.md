@@ -138,16 +138,18 @@ What we can do today is demonstrate
 * deploying a pre-built Docker image that originates from a secure, private Docker registry (e.g., Harbor) or
 * starting with source code, leveraging a cloud native [buildpack](https://buildpacks.io) to build and package it into an OCI image, and then deploying.
 
+Option 1:
+
+If you haven't yet installed PKS or TKG with Harbor on your IaaS of choice, you might consider a fast-track route for demo/evaluation purposes. Employ  Niall Thomson's [Tanzu Playground](https://github.com/niallthomson/tanzu-playground) to quickly launch cf-for-k8s on GKE.  You may ignore the configure, integrate Harbor, and rollout steps as these are handled.
+
+<details><summary>Generate a kubeconfig entry</summary><pre>gcloud container clusters get-credentials {cluster-name} --zone {availability-zone}</pre></details>
+
+Option 2:
+
 ```
 git clone https://github.com/cloudfoundry/cf-for-k8s.git
 cd cf-for-k8s
 ```
-
-If you haven't yet installed PKS or TKG with Harbor on your IaaS of choice, you might consider a fast-track route for demo/evaluation purposes. Employ  Niall Thomson's [Tanzu Playground](https://github.com/niallthomson/tanzu-playground) to quickly launch cf-for-k8s on GKE.
-
-> **Caveat emptor** as of 2020-03-31, if you choose to follow this route, support for the cf push experience with Cloud Native Buildpacks and resolving container images from a private registry such as Harbor is not yet available.
-
-<details><summary>Generate a kubeconfig entry</summary><pre>gcloud container clusters get-credentials {cluster-name} --zone {availability-zone}</pre></details>
 
 **(TAS) Tanzu Application Service for Kubernetes**
 
@@ -215,6 +217,8 @@ export YTT_TAS_registry__password="{harbor-password}"
 <details><summary>Set DNS entry</summary><pre># Sample A record in cloud provider DNS. The IP address below is the address of Ingress gateway's external IP
 Domain         Record Type  TTL  IP Address
 *.{cf-domain}  A            30   35.111.111.111</pre><ul><li>for GCP, see <a href="https://cloud.google.com/dns/records#adding_or_removing_a_record">Adding or Removing a Record</a></li></ul></details>
+
+#### Additional
 
 <details><summary>Validate</summary><pre>kubectl get pods -n cf-system</pre></details>
 

@@ -15,6 +15,7 @@ LEFTOVERS_VERSION=0.62.0
 PIVNET_VERSION=1.0.1
 TF_VERSION=0.12.24
 TF_K14S_PLUGIN_VERSION=0.4.0
+TF_K14SX_PLUGIN_VERSION=0.0.1
 
 # Add package sources and repositories
 echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
@@ -60,6 +61,8 @@ curl -L https://k14s.io/install.sh | sudo bash
 mkdir -p ~/.terraform.d/plugins
 curl -LO https://github.com/k14s/terraform-provider-k14s/releases/download/v${TF_K14S_PLUGIN_VERSION}/terraform-provider-k14s-binaries.tgz
 tar xzvf terraform-provider-k14s-binaries.tgz -C ~/.terraform.d/plugins/
+curl -LO https://github.com/niallthomson/terraform-provider-k14s/releases/download/v${TF_K14SX_PLUGIN_VERSION}/terraform-provider-k14sx-binaries.tgz
+tar xzvf terraform-provider-k14sx-binaries.tgz -C ~/.terraform.d/plugins/
 
 wget -O pivnet https://github.com/pivotal-cf/pivnet-cli/releases/download/v${PIVNET_VERSION}/pivnet-linux-amd64-${PIVNET_VERSION} && \
 chmod +x pivnet && \
