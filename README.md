@@ -14,11 +14,11 @@ Intent here is to document alternative, curated combinations of tools and produc
 * [Tanzu Portfolio](#tanzu-portfolio)
 * [Run](#run)
   * [TKG](#tkg)
-  * [PKS and Harbor](#pks-and-harbor)
+  * [TKGi and Harbor](#tkgi-and-harbor)
     * [on AWS](#on-aws)
     * [on Azure](#on-azure)
     * [on GCP](#on-gcp)
-    * [Activate additional plans for PKS](#activate-additional-plans-for-pks)
+    * [Activate additional plans for TKGi](#activate-additional-plans-for-tkgi)
   * [TAS](#tas)
     * [Configure](#configure)
         * [Integrate Harbor](#integrate-harbor)
@@ -32,10 +32,13 @@ Intent here is to document alternative, curated combinations of tools and produc
     * [Deploy image](#deploy-image)
     * [Build and deploy from source](#build-and-deploy-from-source)
   * [Brokered Services](#brokered-services)
+    * [minibroker](#minibroker)
+    * [gcp-service-broker](#gcp-service-broker)
     * [(KSM) Container Services Manager](#ksm-container-services-manager)
     * [(TAC) Tanzu Application Catalog](#tac-tanzu-application-catalog)
   * [kpack](#kpack)
     * [Update images](#update-images)
+  * [(TBS) Tanzu Build Service](#tbs-tanzu-build-service)
 * [Manage](#manage)
   * [Velero](#velero)
   * [(TO) Tanzu Observability](#to-tanzu-observability)
@@ -46,11 +49,12 @@ Intent here is to document alternative, curated combinations of tools and produc
 
 ## Overview
 
-The following paths have been tread.  Documentation will be organized (and updated) accordingly.
+The following IaaS providers have been (or will soon be) tread.  Documentation will be organized (and updated) accordingly.
 
-| AWS  | GCP | Azure | VMWare |
-|------|-----|-------|--------|
-|      | :heavy_check_mark: |       |        |
+* AWS
+* Azure
+* GCP
+* VMWare
 
 ## Prerequisites
 
@@ -61,20 +65,31 @@ The minimum complement of
 | aws    | git    | kubectl   |
 | az     | helm   | leftovers |
 | bosh   | httpie | pivnet    |
-| cf     | java   | python    |
-| docker | jq     | terraform |
-| gcloud | k14s   | yq        |
-|        | ksm    |           |
+| cf     | java   | pks       |
+| docker | jq     | python    |
+| gcloud | k14s   | terraform |
+|        | ksm    | yq        |
 
 Here's a [script](jumpbox-tools.sh) that will install the above on an  Ubuntu Linux VM
 
 ## Tanzu Portfolio
 
-The following collection of open-source and commercial products have been evaluated
+The following collection of open-source and commercial products are (or will soon be) reviewed and evaluated here
 
-TKG | PKS                | Harbor             | Velero  | TAS                | kpack |  KSM |TAC | TO  | TMC |
-|---|--------------------|--------------------|---------|--------------------|-------|------|----|-----|-----|
-|   | :heavy_check_mark: | :heavy_check_mark: |         | :heavy_check_mark: |       |      |    |     |     |
+* TKG (Tanzu Kubernetes Grid)
+* TKGi (formerly PKS)
+* Harbor
+* Velero
+* cf-for-k8s
+* TAS for K8s (Tanzu Application Service for Kubernetes)
+* kpack
+* TBS (Tanzu Build Service)
+* minibroker
+* gcp-service-broker
+* KSM (Container Services Manager)
+* TAC (Tanzu Application Catalog)
+* TO (Tanzu Observability, formerly Wavefront)
+* TMC (Tanzu Mission Control)
 
 
 ## Run
@@ -83,7 +98,7 @@ TKG | PKS                | Harbor             | Velero  | TAS                | k
 
 // TODO
 
-### PKS and Harbor
+### TKGi and Harbor
 
 Go visit [Niall Thomson](https://www.niallthomson.com)'s excellent [paasify-pks](https://github.com/niallthomson/paasify-pks) project.
 
@@ -115,7 +130,7 @@ Be sure to peruse and follow the
 <details><summary>And don't forget to restart your jumpbox... you'll need to restart your compute instance in order for Docker to work appropriately.</summary><pre>sudo shutdown -r</pre></details>
 
 
-#### Activate additional plans for PKS
+#### Activate additional plans for TKGi
 
 * Login to Operations Manager
 * Visit the `Enterprise PKS` tile and select `Plan 2` from the left-hand pane
@@ -157,7 +172,7 @@ The commercial distribution based on cf-for-k8s. It must be sourced from the [Pi
 
 ```
 mkdir tas-for-k8s
-pivnet download-product-files --product-slug='pas-for-kubernetes' --release-version='0.1.0-build.223' --product-file-id=649189
+pivnet download-product-files --product-slug='tas-for-kubernetes' --release-version='0.1.0-build.252' --product-file-id=660279
 tar xvf tanzu-application-service.0.1.0-build.223.tar -C tas-for-k8s
 cd tas-for-k8s
 ```
@@ -354,7 +369,118 @@ kubectl delete namespace stratos</pre></details>
 
 ### Brokered Services
 
-No self-respecting enterprise application functions alone.  It's typically integrated with an array of other services (e.g., credentials/secrets management, databases, and messaging queues, to name but a few).  How do we curate, launch and integrate services (from a catalog) with applications?
+No self-respecting enterprise application functions alone.  It's typically integrated with an array of other services (e.g., credentials/secrets management, databases, and messaging queues, to name but a few).  How do we curate, launch and integrate services (from a catalog/marketplace) with applications?
+
+#### minibroker
+
+[Minibroker](https://github.com/kubernetes-sigs/minibroker) is an implementation of the Open Service Broker API suited for local development and testing. Rather than provisioning services from a cloud provider, Minibroker provisions services in containers on the cluster. Minibroker uses Kubernetes Helm Charts as its source of provisionable services.
+
+Dan Baskette shared a short video [demo](https://youtu.be/B-h2yggVk8w) and Github [repository](https://github.com/dbbaskette/tas-on-kind#minibroker-install) where he shares the steps for installing and subsequently integrating minibroker with the TAS marketplace.
+
+#### gcp-service-broker
+
+[Google Cloud Service Broker](https://github.com/GoogleCloudPlatform/gcp-service-broker) adheres to Open Service Broker API v2.13 and may be installed either via a [Helm Chart](https://github.com/GoogleCloudPlatform/gcp-service-broker/tree/master/deployments/helm/gcp-service-broker) or with a cf push and subsequently integrated with the TAS marketplace.
+
+If you're considering the latter approach...
+
+```
+git clone https://github.com/GoogleCloudPlatform/gcp-service-broker.git
+cd gcp-service-broker
+```
+
+Consult and follow the Installing as a Cloud Foundry Application [instructions](https://github.com/GoogleCloudPlatform/gcp-service-broker/blob/master/docs/installation.md#installing-as-a-cloud-foundry-application).  Pause your progress through these instructions once you've completed the section entitled `Set required environment variables`.
+
+**Additionally**
+
+Create and save a new file named `buildpack.yml` with contents as follows
+
+```
+---
+go:
+  import-path: github.com/GoogleCloudPlatform/gcp-service-broker
+```
+
+Update your `manifest.yml` to contain
+
+```
+---
+applications:
+- name: gcp-service-broker
+  memory: 1G
+  env:
+    GOPACKAGENAME: github.com/GoogleCloudPlatform/gcp-service-broker
+    GOVERSION: go1.14
+    ROOT_SERVICE_ACCOUNT_JSON: |
+      {
+        "type": "service_account",
+        "project_id": "REPLACE_ME",
+        "private_key_id": "REPLACE_ME",
+        "private_key": "-----BEGIN PRIVATE KEY-----\nREPLACE_ME\n-----END PRIVATE KEY-----\n",
+        "client_email": "REPLACE_ME",
+        "client_id": "REPLACE_ME",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://accounts.google.com/o/oauth2/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": "REPLACE_ME"
+      }
+    SECURITY_USER_NAME: REPLACE_ME
+    SECURITY_USER_PASSWORD: REPLACE_ME
+    DB_HOST: REPLACE_ME
+    DB_USERNAME: REPLACE_ME
+    DB_PASSWORD: REPLACE_ME
+```
+> Note that `buildpack` has been explicitly removed because we're employing [Cloud Native Buildpacks](https://hub.docker.com/r/cloudfoundry/cnb) rather than the [go-buildpack](https://github.com/cloudfoundry/go-buildpack).  Also note the [required environment variable values](https://github.com/GoogleCloudPlatform/gcp-service-broker/blob/master/docs/installation.md#set-required-environment-variables) that need to be replaced above.
+
+Deploy the app and create a service broker instance
+
+```
+cf push gcp-service-broker-backend
+cf create-service-broker gcp-service-broker {username} {password} {service broker url}
+```
+> Replace occurrences of `{username}` and `{password}` above with the values you respectively assigned to `SECURITY_USER_NAME`, `SECURITY_USER_PASSWORD` in your `manifest.yml`.
+
+> The occurrence of `{service broker url}` above should be replaced with the application route for `gcp-service-broker-backend`.
+
+> The aforementioned route should begin with `http://` until this [issue](https://github.com/cloudfoundry/cf-for-k8s/issues/46) is addressed.
+
+List the available (to be enabled) service offerings
+
+```
+cf service-access
+```
+
+Enable a complement of services in the TAS marketplace
+
+```
+cf enable-service-access google-spanner
+cf enable-service-access google-cloudsql-postgres
+cf enable-service-access google-pubsub
+cf enable-service-access google-storage
+```
+
+Verify the services appear in the marketplace
+
+```
+cf marketplace
+```
+
+Try to create a service instance
+
+```
+cf create-service google-spanner sandbox spanner-sandbox-instance
+```
+
+Validate the service instance is up-and-running
+
+```
+cf services
+```
+> You might also open Google Cloud Console for your account and verify the instance ia live and well
+
+Push, bind, and restage a sample application
+
+// TODO
+
 
 #### (KSM) Container Services Manager
 
@@ -407,3 +533,5 @@ All clusters are not created equally.  Most enterprises struggle to apply consis
 
 * [Cloud Foundry for Kubernetes](https://github.com/cloudfoundry/cf-for-k8s)
 * [(KSM) Container Services Manager](https://docs.pivotal.io/ksm/0-7/index.html)
+
+

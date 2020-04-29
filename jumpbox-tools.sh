@@ -12,10 +12,10 @@ AZ_REPO=$(lsb_release -cs)
 BOSH_VERSION=6.2.1
 CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
 LEFTOVERS_VERSION=0.62.0
-PIVNET_VERSION=1.0.1
+PIVNET_VERSION=1.0.2
 TF_VERSION=0.12.24
 TF_K14S_PLUGIN_VERSION=0.4.0
-TF_K14SX_PLUGIN_VERSION=0.0.1
+TF_K14SX_PLUGIN_VERSION=0.0.2
 
 # Add package sources and repositories
 echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
@@ -74,13 +74,13 @@ sudo mv terraform /usr/local/bin && \
 rm terraform.zip
 
 pivnet login --api-token="${PIVNET_UAA_REFRESH_TOKEN}" && \
-pivnet download-product-files --product-slug='pivotal-container-service' --release-version='1.6.0' --product-file-id=528557 && \
-mv pks-linux-amd64-1.6.0-build.225 pks && \
+pivnet download-product-files --product-slug='pivotal-container-service' --release-version='1.7.0' --product-file-id=649104 && \
+mv pks-linux-amd64-1.7.0-build.26 pks && \
 chmod +x pks && \
 sudo mv pks /usr/local/bin
 
-pivnet download-product-files --product-slug='container-services-manager' --release-version='0.7.92' --product-file-id=630473 && \
-mv ksm-0.7.92.linux ksm && \
+pivnet download-product-files --product-slug='container-services-manager' --release-version='0.8.43' --product-file-id=662739 && \
+mv ksm-0.8.43.linux ksm && \
 chmod +x ksm && \
 sudo mv ksm /usr/local/bin
 
