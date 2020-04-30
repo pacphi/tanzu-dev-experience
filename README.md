@@ -388,9 +388,7 @@ git clone https://github.com/GoogleCloudPlatform/gcp-service-broker.git
 cd gcp-service-broker
 ```
 
-Consult and follow the Installing as a Cloud Foundry Application [instructions](https://github.com/GoogleCloudPlatform/gcp-service-broker/blob/master/docs/installation.md#installing-as-a-cloud-foundry-application).  Pause your progress through these instructions once you've completed the section entitled `Set required environment variables`.
-
-**Additionally**
+Consult and follow the `Installing as a Cloud Foundry Application` [instructions](https://github.com/GoogleCloudPlatform/gcp-service-broker/blob/master/docs/installation.md#installing-as-a-cloud-foundry-application).  Pause your progress through these instructions once you've completed the section entitled `Set required environment variables`.
 
 Create and save a new file named `buildpack.yml` with contents as follows
 
@@ -476,6 +474,7 @@ At a minimum a complement of Couchbase, Elasticsearch, Kafka, Mongo, MySQL, Neo4
 // TODO
 
 #### (TAC) Tanzu Application Catalog
+
 // TODO
 
 ### kpack
@@ -489,6 +488,10 @@ Seems pretty straight-forward to follow these [instructions](https://github.com/
 #### Update images
 
 // TODO Demonstrate a use-case where-in a sub-category of images are updated
+
+### (TBS) Tanzu Build Service
+
+// TODO
 
 ## Manage
 
@@ -520,5 +523,3 @@ All clusters are not created equally.  Most enterprises struggle to apply consis
 
 * [Cloud Foundry for Kubernetes](https://github.com/cloudfoundry/cf-for-k8s)
 * [(KSM) Container Services Manager](https://docs.pivotal.io/ksm/0-7/index.html)
-
-
