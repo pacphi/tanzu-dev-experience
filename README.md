@@ -475,11 +475,32 @@ Validate the service instance is up-and-running
 ```
 cf services
 ```
-> You might also open Google Cloud Console for your account and verify the instance ia live and well
 
-Push, bind, and restage a sample application
+Fetch the instance id of the spanner-sandbox-instance
 
-// TODO
+```
+gcloud spanner instances list
+```
+> Note the `NAME` of the instance
+
+Create a database within the instance
+
+```
+gcloud spanner databases create library --instance={name}
+```
+> Replace the occurrence of `{name}` above with instance name of your spanner-sandbox-instance
+
+Push a sample application
+
+```
+git clone https://github.com/pacphi/spring-books.git
+cd spring-books
+cf push
+```
+
+<details><summary>Cleanup</summary><pre>cf unbind-service spring-books spanner-sandbox-instance
+cf delete-service spanner-sandbox-instance -f
+cf delete spring-books -r -f</pre></details>
 
 
 #### (KSM) Container Services Manager
