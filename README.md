@@ -173,7 +173,7 @@ The commercial distribution based on cf-for-k8s. It must be sourced from the [Pi
 ```
 mkdir tas-for-k8s
 pivnet download-product-files --product-slug='tas-for-kubernetes' --release-version='0.1.0-build.252' --product-file-id=660279
-tar xvf tanzu-application-service.0.1.0-build.223.tar -C tas-for-k8s
+tar xvf tanzu-application-service.0.1.0-build.252.tar -C tas-for-k8s
 cd tas-for-k8s
 ```
 > Update `--release-version` and `--product-file-id` when later releases become available
