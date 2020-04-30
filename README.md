@@ -464,43 +464,9 @@ Verify the services appear in the marketplace
 cf marketplace
 ```
 
-Try to create a service instance
-
-```
-cf create-service google-spanner sandbox spanner-sandbox-instance
-```
-
-Validate the service instance is up-and-running
-
-```
-cf services
-```
-
-Fetch the instance id of the spanner-sandbox-instance
-
-```
-gcloud spanner instances list
-```
-> Note the `NAME` of the instance
-
-Create a database within the instance
-
-```
-gcloud spanner databases create library --instance={name}
-```
-> Replace the occurrence of `{name}` above with instance name of your spanner-sandbox-instance
-
 Push a sample application
 
-```
-git clone https://github.com/pacphi/spring-books.git
-cd spring-books
-cf push
-```
-
-<details><summary>Cleanup</summary><pre>cf unbind-service spring-books spanner-sandbox-instance
-cf delete-service spanner-sandbox-instance -f
-cf delete spring-books -r -f</pre></details>
+Have a look at [spring-books](https://github.com/pacphi/spring-books)
 
 
 #### (KSM) Container Services Manager
